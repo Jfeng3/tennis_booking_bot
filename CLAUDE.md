@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Simple Video Creation Studio - A minimal React + FastAPI application for creating videos with AI.
+Tennis Court Booking Bot - A minimal React + FastAPI application for people to easily set up bots to book tennis courts.
 
 # Development Instructions
 
@@ -39,17 +39,18 @@ python run.py  # Port 8000
 
 ## Features
 
-1. **Project Management** - Create and list projects
-2. **File Upload** - Upload media files
-3. **AI Generation** - Generate images/videos with prompts
+1. **Bot Configuration** - Set up tennis court booking bots
+2. **Court Monitoring** - Monitor available court slots
+3. **Automated Booking** - Automatically book courts when available
+4. **Manual Booking Flow** - Direct bot to specific page to select date, select court, fill form and complete booking
 
 ## API Endpoints
 
-- `POST /projects` - Create project (name parameter)
-- `GET /projects` - List all projects
-- `POST /upload` - Upload file (multipart form)
-- `POST /generate` - Start AI generation (prompt, type)
-- `GET /generate/{id}` - Check generation status
+- `POST /bots` - Create bot configuration
+- `GET /bots` - List all bots
+- `POST /monitor` - Start court monitoring
+- `POST /book` - Attempt to book court
+- `GET /bookings/{id}` - Check booking status
 
 ## Development Guidelines
 

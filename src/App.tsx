@@ -4,117 +4,153 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 
 function App() {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [projectName, setProjectName] = useState('');
-  const [prompt, setPrompt] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [bots, setBots] = useState<any[]>([]);
+  const [botName, setBotName] = useState('');
+  const [bookingUrl, setBookingUrl] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedCourt, setSelectedCourt] = useState('');
+  const [playerName, setPlayerName] = useState('');
+  const [playerEmail, setPlayerEmail] = useState('');
 
-  // Create project
-  const createProject = async () => {
-    if (!projectName) return;
+  // Create bot
+  const createBot = async () => {
+    if (!botName) return;
     
-    const response = await fetch(`http://localhost:8000/projects?name=${encodeURIComponent(projectName)}`, {
+    const response = await fetch(`http://localhost:8000/bots?name=${encodeURIComponent(botName)}`, {
       method: 'POST'
     });
     
     if (response.ok) {
-      const project = await response.json();
-      setProjects([...projects, project]);
-      setProjectName('');
+      const bot = await response.json();
+      setBots([...bots, bot]);
+      setBotName('');
     }
   };
 
-  // Upload file
-  const uploadFile = async () => {
-    if (!selectedFile) return;
+  // Start monitoring
+  const startMonitoring = async () => {
+    if (!bookingUrl) return;
     
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    
-    const response = await fetch('http://localhost:8000/upload', {
+    const response = await fetch('http://localhost:8000/monitor', {
       method: 'POST',
-      body: formData
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: bookingUrl })
     });
     
     if (response.ok) {
-      alert('File uploaded successfully');
-      setSelectedFile(null);
+      alert('Monitoring started successfully');
+      setBookingUrl('');
     }
   };
 
-  // Generate AI content
-  const generateContent = async (type: string) => {
-    if (!prompt) return;
+  // Manual booking flow
+  const startManualBooking = async () => {
+    if (!bookingUrl || !selectedDate || !selectedCourt || !playerName || !playerEmail) {
+      alert('Please fill in all booking details');
+      return;
+    }
     
-    const response = await fetch('http://localhost:8000/generate', {
+    const response = await fetch('http://localhost:8000/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, type })
+      body: JSON.stringify({ 
+        url: bookingUrl,
+        date: selectedDate,
+        court: selectedCourt,
+        playerName,
+        playerEmail
+      })
     });
     
     if (response.ok) {
       const result = await response.json();
-      alert(`Generation started: ${result.id}`);
-      setPrompt('');
+      alert(`Booking started: ${result.id}`);
+      setSelectedDate('');
+      setSelectedCourt('');
+      setPlayerName('');
+      setPlayerEmail('');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        <h1 className="text-3xl font-bold">Video Creation Studio</h1>
+        <h1 className="text-3xl font-bold">Tennis Court Booking Bot</h1>
         
-        {/* Create Project */}
+        {/* Bot Configuration */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Create Project</h2>
+          <h2 className="text-xl font-semibold mb-4">Bot Configuration</h2>
           <div className="flex gap-2">
             <Input
-              placeholder="Project name"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
+              placeholder="Bot name"
+              value={botName}
+              onChange={(e) => setBotName(e.target.value)}
             />
-            <Button onClick={createProject}>Create</Button>
+            <Button onClick={createBot}>Create Bot</Button>
           </div>
           
-          {/* Project List */}
+          {/* Bot List */}
           <div className="mt-4 space-y-2">
-            {projects.map((project) => (
-              <div key={project.id} className="p-2 bg-gray-100 rounded">
-                {project.name}
+            {bots.map((bot) => (
+              <div key={bot.id} className="p-2 bg-gray-100 rounded">
+                {bot.name}
               </div>
             ))}
           </div>
         </Card>
 
-        {/* Upload File */}
+        {/* Court Monitoring */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">Upload Media</h2>
+          <h2 className="text-xl font-semibold mb-4">Court Monitoring</h2>
           <div className="flex gap-2">
             <Input
-              type="file"
-              onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+              placeholder="Booking website URL"
+              value={bookingUrl}
+              onChange={(e) => setBookingUrl(e.target.value)}
             />
-            <Button onClick={uploadFile} disabled={!selectedFile}>
-              Upload
+            <Button onClick={startMonitoring} disabled={!bookingUrl}>
+              Start Monitoring
             </Button>
           </div>
         </Card>
 
-        {/* AI Generation */}
+        {/* Manual Booking Flow */}
         <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-4">AI Generation</h2>
-          <Input
-            placeholder="Enter your prompt"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            className="mb-4"
-          />
-          <div className="flex gap-2">
-            <Button onClick={() => generateContent('image')}>
-              Generate Image
-            </Button>
-            <Button onClick={() => generateContent('video')}>
-              Generate Video
+          <h2 className="text-xl font-semibold mb-4">Manual Booking Flow</h2>
+          <div className="space-y-4">
+            <Input
+              placeholder="Booking website URL"
+              value={bookingUrl}
+              onChange={(e) => setBookingUrl(e.target.value)}
+            />
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                type="date"
+                placeholder="Select date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+              />
+              <Input
+                placeholder="Court number/name"
+                value={selectedCourt}
+                onChange={(e) => setSelectedCourt(e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Input
+                placeholder="Player name"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+              />
+              <Input
+                type="email"
+                placeholder="Player email"
+                value={playerEmail}
+                onChange={(e) => setPlayerEmail(e.target.value)}
+              />
+            </div>
+            <Button onClick={startManualBooking} className="w-full">
+              Start Booking Process
             </Button>
           </div>
         </Card>
