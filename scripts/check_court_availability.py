@@ -63,8 +63,8 @@ def find_next_button(page: Page):
 
 def book_court(user_info: dict, days_ahead: int = 6, preferred_time: str = '1:00 PM', auto_submit: bool = True):
     with sync_playwright() as p:
-        # Launch browser in non-headless mode
-        browser = p.chromium.launch(headless=False)
+        # Launch browser in headless mode
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page()
         
         try:
