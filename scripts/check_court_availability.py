@@ -66,8 +66,28 @@ def book_court(user_info: dict, days_ahead: int = 6, preferred_time: str = '1:00
         # Launch browser - headless in CI, visible locally
         import os
         headless = os.environ.get('CI') == 'true'
-        browser = p.chromium.launch(headless=headless)
+        
+        if headless:
+            # Configure headless browser to avoid detection
+            browser = p.chromium.launch(
+                headless=True,
+                args=[
+                    '--no-sandbox',
+                    '--disable-blink-features=AutomationControlled',
+                    '--disable-dev-shm-usage',
+                    '--disable-web-security',
+                    '--disable-features=VizDisplayCompositor'
+                ]
+            )
+        else:
+            browser = p.chromium.launch(headless=False)
         page = browser.new_page()
+        
+        # Set a realistic user agent to avoid detection
+        if headless:
+            page.set_extra_http_headers({
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            })
         
         try:
             # Navigate to the booking page
@@ -146,7 +166,7 @@ def book_court(user_info: dict, days_ahead: int = 6, preferred_time: str = '1:00
                         next_button.click()
                         
                         # Wait for new dates to load
-                        time.sleep(3 * random.random())
+                        time.sleep(3 * random.random()+ 3)
                         attempts += 1
                     else:
                         print('No "More Times" button found. Target date may not be available.')
