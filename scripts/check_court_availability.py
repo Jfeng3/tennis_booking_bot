@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright, Page
 from datetime import datetime, timedelta
 import time
 import random
+from fill_booking_form import fill_and_submit_booking
 
 def normalize_text(text):
     """Normalize text by removing extra whitespaces"""
@@ -60,7 +61,7 @@ def find_next_button(page: Page):
     
     return None
 
-def check_court_availability():
+def book_court(user_info: dict, days_ahead: int = 6, preferred_time: str = '1:00 PM', auto_submit: bool = True):
     with sync_playwright() as p:
         # Launch browser in non-headless mode
         browser = p.chromium.launch(headless=False)
@@ -74,8 +75,8 @@ def check_court_availability():
             # Wait for date elements to load
             page.wait_for_selector('p.css-r0fex2', timeout=10000)
             
-            # Calculate target date (current date + 7 days)
-            target_date = datetime.now() + timedelta(days=6)
+            # Calculate target date
+            target_date = datetime.now() + timedelta(days=days_ahead)
             target_day = target_date.day
             target_month = target_date.strftime('%b')  # Short month format (Jan, Feb, Mar, etc.)
             target_year = target_date.year
@@ -114,11 +115,21 @@ def check_court_availability():
                             if '1:00 PM' in slot['time'] or '1:00 PM' in slot['time']:
                                 print(f"\n🎯 Found 1pm slot! Clicking on {slot['time']}...")
                                 slot['button'].click()
+                                # Wait after clicking timeslot
+                                time.sleep(3 * random.random())
                                 found_1pm = True
                                 break
                         
                         if not found_1pm:
                             print('\n⚠️  No 1pm timeslot found')
+                        else:
+                            # Wait for booking form to load
+                            time.sleep(2)
+                            try:
+                                print('\n📝 Filling booking form...')
+                                fill_and_submit_booking(page, user_info, auto_submit=True)
+                            except Exception as e:
+                                print(f'❌ Error filling form: {e}')
                     else:
                         print('  No timeslots available')
                     break
@@ -152,4 +163,11 @@ def check_court_availability():
             browser.close()
 
 if __name__ == "__main__":
-    check_court_availability()
+    book_court(user_info={
+        'first_name': 'Jason',
+        'last_name': 'Feng',
+        'email': 'jiefeng@jupiter-analytics.biz',
+        'times_per_week': '3-4 times per week',
+        'favorite_color': 'Green',
+        'court_type': 'Tennis'
+    })
