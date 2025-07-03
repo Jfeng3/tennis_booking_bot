@@ -63,8 +63,10 @@ def find_next_button(page: Page):
 
 def book_court(user_info: dict, days_ahead: int = 6, preferred_time: str = '1:00 PM', auto_submit: bool = True):
     with sync_playwright() as p:
-        # Launch browser in headless mode
-        browser = p.chromium.launch(headless=True)
+        # Launch browser - headless in CI, visible locally
+        import os
+        headless = os.environ.get('CI') == 'true'
+        browser = p.chromium.launch(headless=headless)
         page = browser.new_page()
         
         try:
@@ -116,9 +118,7 @@ def book_court(user_info: dict, days_ahead: int = 6, preferred_time: str = '1:00
                                 print(f"\n🎯 Found {preferred_time} slot! Clicking on {slot['time']}...")
                                 slot['button'].click()
                                 # Wait after clicking timeslot
-                                wait_time = 3 * random.random()
-                                print(f"⏳ Waiting {wait_time:.2f} seconds after timeslot click...")
-                                time.sleep(wait_time)
+                                time.sleep(3 * random.random())
                                 found_1pm = True
                                 break
                         
@@ -157,7 +157,6 @@ def book_court(user_info: dict, days_ahead: int = 6, preferred_time: str = '1:00
             
             # Keep browser open for manual inspection
             print('Script complete. Press Enter to close browser...')
-            input()
             
         except Exception as error:
             print(f'Error occurred: {error}')
@@ -172,13 +171,5 @@ if __name__ == "__main__":
         'times_per_week': '3-4 times per week',
         'favorite_color': 'Green',
         'court_type': 'Tennis'
-    }, days_ahead=6, preferred_time='4:00 PM', auto_submit=True)
-    time.sleep(10)
-    book_court(user_info={
-        'first_name': 'Jason',
-        'last_name': 'Feng',
-        'email': 'jiefeng@jupiter-analytics.biz',
-        'times_per_week': '3-4 times per week',
-        'favorite_color': 'Green',
-        'court_type': 'Tennis'
-    }, days_ahead=6, preferred_time='5:00 PM', auto_submit=True)
+    }, days_ahead=6, preferred_time='12:00 PM', auto_submit=True)
+    time.sleep(10*random.random())
