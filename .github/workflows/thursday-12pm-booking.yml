@@ -2,9 +2,9 @@ name: Thursday 12PM Tennis Court Booking
 
 on:
   schedule:
-    # Run Thursdays at 12:01 PM Pacific Time for 12:00 PM slots
-    - cron: '1 19 * 3-10 4'      # March through October (PDT) - 12:01 PM PDT = 7:01 PM UTC Thursday
-    - cron: '1 20 * 11-2 4'      # November through February (PST) - 12:01 PM PST = 8:01 PM UTC Thursday
+    # Temporarily run daily at 12:01 PM Pacific Time for 12:00 PM slots (to start today)
+    - cron: '1 19 * 3-10 *'      # March through October (PDT) - 12:01 PM PDT = 7:01 PM UTC daily
+    - cron: '1 20 * 11-2 *'      # November through February (PST) - 12:01 PM PST = 8:01 PM UTC daily
   
   # Allow manual trigger for testing
   workflow_dispatch:
