@@ -3,8 +3,9 @@ name: Wednesday 5PM Tennis Court Booking
 on:
   schedule:
     # Run Wednesdays at 5:01 PM Pacific Time for 5:00 PM slots
-    - cron: '1 0 * 3-10 4'       # March through October (PDT) - 5:01 PM PDT = 12:01 AM UTC Thursday
-    - cron: '1 1 * 11-2 4'       # November through February (PST) - 5:01 PM PST = 1:01 AM UTC Thursday
+    - cron: '1 0 * 3-10 4'       # March through October (PDT) - 5:01 PM PDT Wed = 12:01 AM UTC Thu
+    - cron: '1 1 * 11,12 4'      # November, December (PST) - 5:01 PM PST Wed = 1:01 AM UTC Thu
+    - cron: '1 1 * 1,2 4'        # January, February (PST) - 5:01 PM PST Wed = 1:01 AM UTC Thu
   
   # Allow manual trigger for testing
   workflow_dispatch:

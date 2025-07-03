@@ -4,7 +4,8 @@ on:
   schedule:
     # Run daily at 4:01 PM Pacific Time for 4:00 PM slots
     - cron: '1 23 * 3-10 *'      # March through October (PDT) - 4:01 PM PDT = 11:01 PM UTC
-    - cron: '1 0 * 11-2 *'       # November through February (PST) - 4:01 PM PST = 12:01 AM UTC
+    - cron: '1 0 * 11,12 *'      # November, December (PST) - 4:01 PM PST = 12:01 AM UTC
+    - cron: '1 0 * 1,2 *'        # January, February (PST) - 4:01 PM PST = 12:01 AM UTC
   
   # Allow manual trigger for testing
   workflow_dispatch:
