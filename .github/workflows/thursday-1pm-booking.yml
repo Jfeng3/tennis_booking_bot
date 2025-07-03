@@ -1,11 +1,11 @@
-name: Thursday 12PM Tennis Court Booking
+name: Thursday 1PM Tennis Court Booking
 
 on:
   schedule:
-    # Run Thursdays at 12:01 PM Pacific Time for 12:00 PM slots
-    - cron: '1 19 * 3-10 4'      # March through October (PDT) - 12:01 PM PDT = 7:01 PM UTC Thursday
-    - cron: '1 20 * 11,12 4'     # November, December (PST) - 12:01 PM PST = 8:01 PM UTC Thursday
-    - cron: '1 20 * 1,2 4'       # January, February (PST) - 12:01 PM PST = 8:01 PM UTC Thursday
+    # Run Thursdays at 1:01 PM Pacific Time for 1:00 PM slots
+    - cron: '1 20 * 3-10 4'      # March through October (PDT) - 1:01 PM PDT = 8:01 PM UTC Thursday
+    - cron: '1 21 * 11,12 4'     # November, December (PST) - 1:01 PM PST = 9:01 PM UTC Thursday
+    - cron: '1 21 * 1,2 4'       # January, February (PST) - 1:01 PM PST = 9:01 PM UTC Thursday
   
   # Allow manual trigger for testing
   workflow_dispatch:
@@ -73,13 +73,13 @@ jobs:
         from check_court_availability import book_court
         
         # Log execution time
-        print(f'🎾 Thursday 12PM Tennis Court Booking')
+        print(f'🎾 Thursday 1PM Tennis Court Booking')
         print(f'Started at: {datetime.now()} UTC')
         print('='*60)
         
         # Get parameters
         days_ahead = int('${{ github.event.inputs.days_ahead }}' or '7')
-        preferred_time = '12:00 PM'  # Always book 12:00 PM for Thursday runs
+        preferred_time = '1:00 PM'  # Always book 1:00 PM for Thursday runs
         
         # User info from environment variables or defaults
         user_info = {
@@ -111,10 +111,10 @@ jobs:
             print(f'\\nWaiting {wait_time:.2f} seconds...')
             time.sleep(wait_time)
             
-            print('\\n✅ Thursday 12PM booking completed successfully!')
+            print('\\n✅ Thursday 1PM booking completed successfully!')
             
         except Exception as e:
-            print(f'\\n❌ 12PM booking failed with error: {e}')
+            print(f'\\n❌ 1PM booking failed with error: {e}')
             import traceback
             traceback.print_exc()
             sys.exit(1)
@@ -124,7 +124,7 @@ jobs:
       uses: actions/upload-artifact@v3
       if: always()
       with:
-        name: 12pm-booking-logs-${{ github.run_number }}
+        name: 1pm-booking-logs-${{ github.run_number }}
         path: |
           scripts/*.log
           scripts/*.png

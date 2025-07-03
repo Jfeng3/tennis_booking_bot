@@ -12,6 +12,71 @@ function App() {
   const [playerName, setPlayerName] = useState('');
   const [playerEmail, setPlayerEmail] = useState('');
 
+  // Tennis court booking function
+  const startTennisBooking = async () => {
+    try {
+      // Open the booking page in a new window/tab
+      const bookingUrl = "https://app.acuityscheduling.com/schedule/88825638/appointment/15247850";
+      const bookingWindow = window.open(bookingUrl, '_blank', 'width=1200,height=800');
+      
+      if (!bookingWindow) {
+        alert('Please allow popups to use the booking feature');
+        return;
+      }
+
+      // Wait for the page to load and then execute the booking script
+      setTimeout(() => {
+        try {
+          // Execute the court selection script in the new window
+          bookingWindow.eval(`
+            (function() {
+              const addressText = "Alexander Park, 409 Yorkshire Way, Belmont, CA 94002";
+              const courtName = "Alexander Court #1";
+
+              const containers = document.querySelectorAll('.select-calendar div');
+              let targetButton = null;
+
+              containers.forEach(container => {
+                const label = container.querySelector('p');
+                if (label && label.textContent.trim() === addressText) {
+                  const courtItems = container.querySelectorAll('li');
+
+                  courtItems.forEach(item => {
+                    const paragraphs = item.querySelectorAll('p');
+                    paragraphs.forEach(p => {
+                      if (p.textContent.trim() === courtName) {
+                        const button = item.querySelector('button');
+                        if (button && button.textContent.trim() === "Select") {
+                          targetButton = button;
+                        }
+                      }
+                    });
+                  });
+                }
+              });
+
+              if (targetButton) {
+                targetButton.click();
+                console.log('Select button clicked successfully!');
+              } else {
+                console.warn('Button not found!');
+              }
+            })();
+          `);
+          
+          alert('Booking script executed! Check the opened window for Alexander Court #1 selection.');
+        } catch (error) {
+          console.error('Error executing booking script:', error);
+          alert('Could not execute booking script due to security restrictions. Please manually select Alexander Court #1.');
+        }
+      }, 3000); // Wait 3 seconds for page to load
+      
+    } catch (error) {
+      console.error('Error starting tennis booking:', error);
+      alert('Error starting booking process');
+    }
+  };
+
   // Create bot
   const createBot = async () => {
     if (!botName) return;
@@ -112,6 +177,17 @@ function App() {
               Start Monitoring
             </Button>
           </div>
+        </Card>
+
+        {/* Tennis Court Booking */}
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Tennis Court Booking</h2>
+          <p className="text-gray-600 mb-4">
+            Automatically book Alexander Court #1 at Alexander Park
+          </p>
+          <Button onClick={startTennisBooking} className="w-full bg-green-600 hover:bg-green-700">
+            Start Booking
+          </Button>
         </Card>
 
         {/* Manual Booking Flow */}

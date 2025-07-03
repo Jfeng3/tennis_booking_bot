@@ -4,7 +4,7 @@ Three separate workflows handle automatic tennis court booking:
 
 1. **Daily 4PM Booking** - Runs every day at 4:01 PM PST/PDT for 4:00 PM slots
 2. **Wednesday 5PM Booking** - Runs every Wednesday at 5:01 PM PST/PDT for 5:00 PM slots
-3. **Thursday 12PM Booking** - Runs every Thursday at 12:01 PM PST/PDT for 12:00 PM slots
+3. **Thursday 1PM Booking** - Runs every Thursday at 1:01 PM PST/PDT for 1:00 PM slots
 
 ## Setup Instructions
 
@@ -29,9 +29,9 @@ Go to your repository Settings → Secrets and variables → Actions, and add th
 - Runs every Wednesday at 5:01 PM Pacific Time  
 - Books 5:00 PM court slots
 
-**Thursday 12PM Booking:**
-- Runs every Thursday at 12:01 PM Pacific Time
-- Books 12:00 PM court slots
+**Thursday 1PM Booking:**
+- Runs every Thursday at 1:01 PM Pacific Time
+- Books 1:00 PM court slots
 
 All schedules automatically adjust for daylight saving time:
 - During PDT (March-November): Adjusted UTC times
