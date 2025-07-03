@@ -33,9 +33,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install playwright
         pip install pytz
-        # Install Playwright browsers
+        # Install Playwright browsers with dependencies for headless mode
         playwright install chromium
         playwright install-deps
+        # Set up display for headless browser
+        export DISPLAY=:99
     
     - name: Display current time
       run: |
