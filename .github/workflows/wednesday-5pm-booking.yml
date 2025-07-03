@@ -1,0 +1,130 @@
+name: Wednesday 5PM Tennis Court Booking
+
+on:
+  schedule:
+    # Run Wednesdays at 5:01 PM Pacific Time for 5:00 PM slots
+    - cron: '1 0 * 3-10 4'       # March through October (PDT) - 5:01 PM PDT = 12:01 AM UTC Thursday
+    - cron: '1 1 * 11-2 4'       # November through February (PST) - 5:01 PM PST = 1:01 AM UTC Thursday
+  
+  # Allow manual trigger for testing
+  workflow_dispatch:
+    inputs:
+      days_ahead:
+        description: 'Days ahead to book (default: 7)'
+        required: false
+        default: '7'
+
+jobs:
+  book-5pm-court:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install playwright
+        pip install pytz
+        # Install Playwright browsers
+        playwright install chromium
+        playwright install-deps
+    
+    - name: Display current time
+      run: |
+        echo "GitHub Action running at UTC: $(date -u)"
+        echo "Pacific Time: $(TZ='America/Los_Angeles' date)"
+        python3 -c "
+        from datetime import datetime
+        import pytz
+        
+        utc_time = datetime.now(pytz.UTC)
+        pacific_time = utc_time.astimezone(pytz.timezone('America/Los_Angeles'))
+        
+        print(f'UTC Time: {utc_time.strftime(\"%Y-%m-%d %H:%M:%S %Z\")}')
+        print(f'Pacific Time: {pacific_time.strftime(\"%Y-%m-%d %H:%M:%S %Z\")}')
+        print(f'Day of week: {pacific_time.strftime(\"%A\")}')
+        print(f'Is DST: {bool(pacific_time.dst())}')
+        "
+    
+    - name: Run 5PM booking script
+      env:
+        FIRST_NAME: ${{ secrets.FIRST_NAME || 'Jason' }}
+        LAST_NAME: ${{ secrets.LAST_NAME || 'Feng' }}
+        EMAIL: ${{ secrets.EMAIL || 'jiefeng@jupiter-analytics.biz' }}
+        TIMES_PER_WEEK: ${{ secrets.TIMES_PER_WEEK || '3-4 times per week' }}
+        FAVORITE_COLOR: ${{ secrets.FAVORITE_COLOR || 'Green' }}
+        COURT_TYPE: ${{ secrets.COURT_TYPE || 'Tennis' }}
+      run: |
+        cd scripts
+        python3 -c "
+        import os
+        import sys
+        import time
+        import random
+        from datetime import datetime
+        from check_court_availability import book_court
+        
+        # Log execution time
+        print(f'🎾 Wednesday 5PM Tennis Court Booking')
+        print(f'Started at: {datetime.now()} UTC')
+        print('='*60)
+        
+        # Get parameters
+        days_ahead = int('${{ github.event.inputs.days_ahead }}' or '7')
+        preferred_time = '5:00 PM'  # Always book 5:00 PM for Wednesday runs
+        
+        # User info from environment variables or defaults
+        user_info = {
+            'first_name': os.environ.get('FIRST_NAME', 'Jason'),
+            'last_name': os.environ.get('LAST_NAME', 'Feng'),
+            'email': os.environ.get('EMAIL', 'jiefeng@jupiter-analytics.biz'),
+            'times_per_week': os.environ.get('TIMES_PER_WEEK', '3-4 times per week'),
+            'favorite_color': os.environ.get('FAVORITE_COLOR', 'Green'),
+            'court_type': os.environ.get('COURT_TYPE', 'Tennis')
+        }
+        
+        print(f'Booking for: {user_info[\"first_name\"]} {user_info[\"last_name\"]}')
+        print(f'Email: {user_info[\"email\"]}')
+        print(f'Days ahead: {days_ahead}')
+        print(f'Preferred time: {preferred_time}')
+        print('='*60)
+        
+        try:
+            # Run the booking
+            book_court(
+                user_info=user_info,
+                days_ahead=days_ahead,
+                preferred_time=preferred_time,
+                auto_submit=True
+            )
+            
+            # Wait as specified
+            wait_time = 10 * random.random()
+            print(f'\\nWaiting {wait_time:.2f} seconds...')
+            time.sleep(wait_time)
+            
+            print('\\n✅ Wednesday 5PM booking completed successfully!')
+            
+        except Exception as e:
+            print(f'\\n❌ 5PM booking failed with error: {e}')
+            import traceback
+            traceback.print_exc()
+            sys.exit(1)
+        "
+    
+    - name: Upload logs
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: 5pm-booking-logs-${{ github.run_number }}
+        path: |
+          scripts/*.log
+          scripts/*.png
+        retention-days: 30
