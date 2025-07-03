@@ -2,8 +2,8 @@ name: Thursday 1PM Tennis Court Booking
 
 on:
   schedule:
-    # Run today at 1:08 PM Pacific Time for 1:00 PM slots (temporary for testing)
-    - cron: '8 20 3 7 4'         # July 3rd at 1:08 PM PDT = 8:08 PM UTC Thursday
+    # Run today at 1:13 PM Pacific Time for 1:00 PM slots (temporary for testing)
+    - cron: '13 20 3 7 4'        # July 3rd at 1:13 PM PDT = 8:13 PM UTC Thursday
     # Regular schedule (for future):
     - cron: '1 20 * 3-10 4'      # March through October (PDT) - 1:01 PM PDT = 8:01 PM UTC Thursday
     - cron: '1 21 * 11,12 4'     # November, December (PST) - 1:01 PM PST = 9:01 PM UTC Thursday
