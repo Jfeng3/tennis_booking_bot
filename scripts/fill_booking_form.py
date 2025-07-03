@@ -1,5 +1,7 @@
 from playwright.sync_api import Page
 import pdb
+import time
+import random
 
 def fill_and_submit_booking(page: Page, user_info: dict, auto_submit: bool = True):
     """
@@ -52,17 +54,34 @@ def fill_and_submit_booking(page: Page, user_info: dict, auto_submit: bool = Tru
         print(f"✅ Favorite color filled: {user_info.get('favorite_color', 'Green')}")
         
         # Tennis or Pickleball dropdown
-        court_type_dropdown = page.locator('[aria-labelledby="fields\\[field-14027630\\]-label"]')
+        # First find the dropdown button by its aria-labelledby attribute
+        court_type_dropdown = page.locator('[aria-labelledby="fields[field-14027630]-label"]')
+        
+        # Click the dropdown to open it
+        print("📋 Opening court type dropdown...")
         court_type_dropdown.click()
         
-        # Wait for dropdown options to appear
-        page.wait_for_timeout(500)
+        # Wait after clicking dropdown (1 * random seconds)
+        wait_time = 1 * random.random()
+        print(f"⏳ Waiting {wait_time:.2f} seconds after dropdown click...")
+        time.sleep(wait_time)
         
         # Select the court type (Tennis or Pickleball)
         court_type = user_info.get('court_type', 'Tennis')
-        option = page.locator(f'text={court_type}').first
+        
+        # Look for the option in the dropdown list
+        option = page.locator(f'li:has-text("{court_type}")').first
+        if not option.is_visible():
+            # Fallback: try different selector
+            option = page.locator(f'text="{court_type}"').first
+            
         option.click()
         print(f"✅ Court type selected: {court_type}")
+        
+        # Wait after clicking option (3 * random seconds)
+        wait_time = 3 * random.random()
+        print(f"⏳ Waiting {wait_time:.2f} seconds after option click...")
+        time.sleep(wait_time)
         
         print("✅ Form filled successfully!")
         
@@ -72,6 +91,12 @@ def fill_and_submit_booking(page: Page, user_info: dict, auto_submit: bool = Tru
         if auto_submit:
             print("🎯 Clicking Confirm Appointment button...")
             confirm_button.click()
+            
+            # Wait after clicking confirm button (3 * random seconds)
+            wait_time = 3 * random.random()
+            print(f"⏳ Waiting {wait_time:.2f} seconds after confirm button click...")
+            time.sleep(wait_time)
+            
             print("✅ Appointment confirmed!")
         else:
             print("ℹ️  Form filled. Click 'Confirm Appointment' button to submit.")

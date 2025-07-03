@@ -112,16 +112,18 @@ def book_court(user_info: dict, days_ahead: int = 6, preferred_time: str = '1:00
                         # Look for 4pm timeslot and click it
                         found_1pm = False
                         for slot in timeslots:
-                            if '1:00 PM' in slot['time'] or '1:00 PM' in slot['time']:
-                                print(f"\n🎯 Found 1pm slot! Clicking on {slot['time']}...")
+                            if preferred_time in slot['time']:
+                                print(f"\n🎯 Found {preferred_time} slot! Clicking on {slot['time']}...")
                                 slot['button'].click()
                                 # Wait after clicking timeslot
-                                time.sleep(3 * random.random())
+                                wait_time = 3 * random.random()
+                                print(f"⏳ Waiting {wait_time:.2f} seconds after timeslot click...")
+                                time.sleep(wait_time)
                                 found_1pm = True
                                 break
                         
                         if not found_1pm:
-                            print('\n⚠️  No 1pm timeslot found')
+                                print(f'\n⚠️  No {preferred_time} timeslot found')
                         else:
                             # Wait for booking form to load
                             time.sleep(2)
@@ -170,4 +172,13 @@ if __name__ == "__main__":
         'times_per_week': '3-4 times per week',
         'favorite_color': 'Green',
         'court_type': 'Tennis'
-    })
+    }, days_ahead=6, preferred_time='4:00 PM', auto_submit=True)
+    time.sleep(10)
+    book_court(user_info={
+        'first_name': 'Jason',
+        'last_name': 'Feng',
+        'email': 'jiefeng@jupiter-analytics.biz',
+        'times_per_week': '3-4 times per week',
+        'favorite_color': 'Green',
+        'court_type': 'Tennis'
+    }, days_ahead=6, preferred_time='5:00 PM', auto_submit=True)
